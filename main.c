@@ -29,16 +29,29 @@ struct Book{
 struct Book fillBookData();
 void printBook(struct Book book);
 
-
 // list functions //
 struct node * createnode(struct Book book);
-int addnode(struct node** phead,struct node** ptail, char path[] , struct Book book);
+int addnode(struct node** phead,struct node** ptail,  struct Book book);
+
 int readFileIntoList(struct node* * phead , struct node** ptail,char path[]);
-void printList(struct node** phead);
-int getSize(struct node** phead);
+int writeIntoFile(struct Book* book ,char path[]  );
+
+void printList(struct node* phead);
+int getSize(struct node* phead);
+
 struct Book * search(struct node* phead,char name[]);
+
+// sorting 
+void swap(struct node* a , struct node* b);
+void bubbleSort(struct node* head);
+
 int removeBook(int id);
 
+
+
+
+// main functions 
+void menu();
 
 
 int main(int argc, char **argv)
@@ -51,8 +64,10 @@ int main(int argc, char **argv)
 
     readFileIntoList(&phead,&ptail,path);
     struct Book book = fillBookData();
-    addnode(&phead ,&ptail,path,book ) ;
-    printList(&phead);
+   addnode(&phead ,&ptail,book ) ;
+   writeIntoFile(&book , path);
+   bubbleSort(phead);
+    printList(phead);
     
     struct Book* retval = search(phead,val);
     if(retval){
@@ -61,19 +76,19 @@ int main(int argc, char **argv)
     }
     
     
-    printf("\n\nsize : %d\n",getSize(&phead));
+    printf("\n\nsize : %d\n",getSize(phead));
     
 	return 0;
 }
 
 
-// book functions 
 
-/*
- * fill bookData  
- * return book struct
- * */
- 
+
+/**
+ * @Fill book details from user input
+ * @param void
+ * @return  struct Book
+ */
 struct Book  fillBookData(){
    struct Book book;
     printf("Enter the book id: ");
@@ -84,16 +99,15 @@ struct Book  fillBookData(){
     scanf("%s",book.author);
     printf("Enter the book price : ");
     scanf("%d",&book.price);
-    
     return book;
 }
 
 
-/*
- * print book details 
- * return void
- * */
- 
+/**
+ * @print the details of a single book
+ * @param struct Book
+ * @return  void
+ */
 void printBook(struct Book book){
     printf("\n");
     printf("book's id :   %d \n",book.id);
@@ -104,13 +118,14 @@ void printBook(struct Book book){
 }
 
 
-
-
 // list functions
 
-
-// createnode function return a pointer to node 
-
+/**
+ * @brief  createnode function return a pointer to node 
+ * @param struct Book
+ * @return  struct node* 
+ */
+ 
 struct node * createnode( struct Book book){
             struct node * ptr = (struct node *) malloc(sizeof(struct node));
             if(ptr){
@@ -122,10 +137,15 @@ struct node * createnode( struct Book book){
             return ptr;
 }
 
-// addnode function ... append a node to the list and reecord the entry to the file 
-
-int addnode(struct node** phead,struct node** ptail, char path[] , struct Book book){
-    FILE * outfile ;
+/**
+ * @brief   append a node to the list  
+ * @param pointer to the head pointer of the list
+ * @param pointer to the tail pointer of the list
+ * @param struct Book
+ * @return  int
+ */
+int addnode(struct node** phead,struct node** ptail, struct Book book){
+   
     int retval =0;
     struct node* ptr = createnode(book);
     if(ptr){
@@ -137,8 +157,21 @@ int addnode(struct node** phead,struct node** ptail, char path[] , struct Book b
             (*ptail)->next = ptr;
             *ptail = ptr;
         }
-        
-        outfile = fopen ("books.dat", "a"); 
+    retval =1;
+    }
+    return retval;
+}
+
+
+/*
+ * write a node to the .dat file
+ * shall be called after addnode function
+ * */
+ 
+int writeIntoFile(struct Book*  book ,char path[]  ){
+    int retval =0;
+     FILE * outfile ;
+      outfile = fopen (path, "a"); 
         
         // check if the file is opened 
         if (outfile == NULL) 
@@ -149,18 +182,13 @@ int addnode(struct node** phead,struct node** ptail, char path[] , struct Book b
         else{
                         // writing the content of book struct into the file 
         
-                        fwrite (&(ptr->book),sizeof(struct Book),1,outfile);
+                        fwrite (book,sizeof(struct Book),1,outfile);
         
                         printf("book added and contents to file written successfully !\n"); 
                         fclose (outfile);
+                        retval =1;
         }
-        
-        
-     
-        retval =1;
-    }
-    
-    return retval;
+        return retval;
 }
 
 
@@ -195,11 +223,10 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
 }
 
 
-
 // print the whole list of books
 
-void printList(struct node** phead){
-    struct node * temp = *phead;
+void printList(struct node* phead){
+    struct node * temp = phead;
     if(!temp){
         printf("\nLibrary is empty.\n");
     }
@@ -219,9 +246,9 @@ void printList(struct node** phead){
 
 
 // get list size
-int getSize(struct node** phead){
+int getSize(struct node* phead){
     int size =0;
-    struct node* temp = *phead;
+    struct node* temp = phead;
     while(temp){
         size ++;
         temp = temp->next;
@@ -247,3 +274,52 @@ struct Book * search(struct node* phead,char name[]){
     
     return ptr;
 }
+
+
+
+void bubbleSort(struct node *head) 
+{ 
+    int swapped, i; 
+    struct node *ptr1; 
+    struct node *lptr = NULL; 
+  
+    /* Checking for empty list */
+    if (head == NULL) 
+        return; 
+  
+    do
+    { 
+        swapped = 0; 
+        ptr1 = head; 
+  
+        while (ptr1->next != lptr) 
+        { 
+            if (ptr1->book.id> ptr1->next->book.id) 
+            {  
+                swap(ptr1, ptr1->next); 
+                swapped = 1; 
+            } 
+            ptr1 = ptr1->next; 
+        } 
+        lptr = ptr1; 
+    } 
+    while (swapped); 
+} 
+  
+
+/* function to swap data of two nodes a and b*/
+void swap(struct node *a, struct node *b) 
+{ 
+    struct Book temp = a->book; 
+    a->book = b->book; 
+    b->book= temp; 
+} 
+
+
+
+
+
+
+
+
+
