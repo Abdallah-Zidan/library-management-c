@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "functions.h"
 
 /*
  * A console program to manage a library of books 
@@ -50,6 +51,7 @@ int removeBook(struct node ** phead,struct node** ptail,int id,char path[]);
 
 // main functions 
 void menu(struct node ** phead , struct node ** ptail,char path[] , struct Book book ,  struct node* ptr);
+char getch(void);
 
 long int identifier =1l;
 int main(int argc, char **argv)
@@ -372,13 +374,16 @@ void swap(struct node *a, struct node *b)
 
 void menu(struct node ** phead , struct node ** ptail,char path[] , struct Book book ,  struct node* ptr){
     int choice , done =0 , removeId , retval ;
+    char s[2];
     printf("Library management system using c language.\n\n");
    
 do {
+    system("clear");
  printf("choose from the following : \n");
-    printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- remove book by id.\n6- exit.");
+    printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- remove book by id.\n6- exit.\n");
     printf("your choice : ");
     scanf("%d",&choice);
+    system("clear");
     switch(choice){
         case 1:
             book = fillBookData();
@@ -390,6 +395,7 @@ do {
         case 2:
             break;
         case 3:
+                
                 printf("you have %d book in the library \n\n",getSize(*phead));
                 break;
             case 4:
@@ -414,11 +420,18 @@ do {
             
             
     }
+     if(choice!=6)//don't print this when exit the program
+     {
+         printf("press any key to continue...");
+         getch();
+     }
     
 }while(!done);
     
 
 }
+
+
 
 
 
