@@ -45,43 +45,28 @@ struct Book * search(struct node* phead,char name[]);
 void swap(struct node* a , struct node* b);
 void bubbleSort(struct node* head);
 
-int removeBook(int id);
-
-
+int removeBook(struct node ** phead,struct node** ptail,int id,char path[]);
 
 
 // main functions 
-void menu();
+void menu(struct node ** phead , struct node ** ptail,char path[] , struct Book book ,  struct node* ptr);
 
-
+long int identifier =1l;
 int main(int argc, char **argv)
 {
 
     char path[] = "books.dat";
-    char val[] = "Alchemist";
     struct node* phead = NULL;
     struct node* ptail = NULL;
+    struct Book book;
+    struct node* ptr = NULL;
 
-    readFileIntoList(&phead,&ptail,path);
-    struct Book book = fillBookData();
-   addnode(&phead ,&ptail,book ) ;
-   writeIntoFile(&book , path);
-   bubbleSort(phead);
-    printList(phead);
-    
-    struct Book* retval = search(phead,val);
-    if(retval){
-        printf("found ..... ");
-        printBook(*retval);
-    }
-    
-    
-    printf("\n\nsize : %d\n",getSize(phead));
+  readFileIntoList(&phead,&ptail,path);
+
+  menu(&phead,&ptail,path,book ,ptr);
     
 	return 0;
 }
-
-
 
 
 /**
@@ -91,8 +76,7 @@ int main(int argc, char **argv)
  */
 struct Book  fillBookData(){
    struct Book book;
-    printf("Enter the book id: ");
-    scanf("%d",&book.id);
+    book.id = identifier;
     printf("Enter the book name : ");
     scanf("%s",book.name);
     printf("Enter book Author : ");
@@ -157,6 +141,7 @@ int addnode(struct node** phead,struct node** ptail, struct Book book){
             (*ptail)->next = ptr;
             *ptail = ptr;
         }
+        identifier++;
     retval =1;
     }
     return retval;
@@ -196,7 +181,7 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
     int retval =0;
     struct Book input;
     FILE * infile ;
-    infile = fopen("books.dat", "r");
+    infile = fopen(path, "r");
      if(infile != NULL){
         while(fread(&input, sizeof(struct Book), 1, infile)) {
             // add each struct into the list
@@ -210,6 +195,7 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
                 (*ptail)->next = ptr;
                 *ptail = ptr;
             }
+            identifier++;
         }
       
    
@@ -314,6 +300,125 @@ void swap(struct node *a, struct node *b)
     a->book = b->book; 
     b->book= temp; 
 } 
+
+
+/**
+ * @brief Delete a book
+ * @param &phead
+ *  @param &ptail
+ * @param id
+ */
+ 
+ int removeBook(struct node** phead ,struct node** ptail, int id,char path[]){
+     int found =0 , deleted =0;
+    
+     struct node * temp = *phead;
+    
+// if the list isn't empty 
+ if(temp){
+    // still in the list boundary and didn't find the record yet 
+     while(temp && !found){
+         if(temp->book.id == id){
+             // check if the found record is the only record 
+            if(temp == *phead && temp == *ptail){
+                *phead = *ptail = NULL;
+                identifier = 1;
+            }    
+            // if not the only record but the first record 
+            else if(temp == *phead){
+                ( *phead)->next->prev = NULL;
+               (*phead) = (*phead)->next;
+               free(temp);
+            }
+             // if not the only record but the last record 
+            else if(temp == *ptail){
+               (*ptail)->prev->next = NULL;
+               *ptail = (*ptail)->prev;
+               free(temp);
+                 identifier = id;
+            }
+            // a record in between any other 2 records 
+            else{
+                temp->next->prev = temp->prev;
+                temp->prev->next = temp->next;
+                free(temp);
+            }
+            found =1;
+            deleted =1;
+         }
+         temp = temp->next;
+     }
+     }
+     if(deleted){
+         remove(path);
+     
+        temp = *phead;
+    
+        
+        while(temp){
+            writeIntoFile(&(temp->book) , path);
+            temp = temp->next;
+        }
+     }
+     
+     
+     return deleted ;
+     
+ }
+
+
+
+// Menu 
+
+void menu(struct node ** phead , struct node ** ptail,char path[] , struct Book book ,  struct node* ptr){
+    int choice , done =0 , removeId , retval ;
+    printf("Library management system using c language.\n\n");
+   
+do {
+ printf("choose from the following : \n");
+    printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- remove book by id.\n6- exit.");
+    printf("your choice : ");
+    scanf("%d",&choice);
+    switch(choice){
+        case 1:
+            book = fillBookData();
+            ptr = createnode(book);
+            addnode(phead , ptail , book);
+            writeIntoFile(&book , path);
+            break;
+            
+        case 2:
+            break;
+        case 3:
+                printf("you have %d book in the library \n\n",getSize(*phead));
+                break;
+            case 4:
+                printList(*phead);
+                break;
+            case 5:
+                printf("the id of the book you want to delete ? : ");
+                scanf("%d",&removeId);
+                retval = removeBook(phead ,ptail , removeId,path);
+                if(retval ){
+                    printf("successfully deleted book of id : %d\n\n",removeId);
+                }else{
+                    printf("sorry .. maybe that book doesn't exist\n\n");
+                }
+                break;
+                
+                   
+            
+        case 6:
+            done =1;
+            break;
+            
+            
+    }
+    
+}while(!done);
+    
+
+}
 
 
 
