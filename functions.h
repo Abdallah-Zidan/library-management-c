@@ -1,6 +1,18 @@
 //for getch
 #include <unistd.h>
 #include <termios.h>
+#include <ctype.h>
+
+
+// convert a string to lower case
+void tolowercase(char string[]){
+    int i =0;
+    while(string[i]){
+        string[i] = tolower(string[i]);
+        i++;
+    }
+}
+
 
 //getch
 char getch(void)
