@@ -3,6 +3,15 @@
 #include <string.h>
 #include "functions.h"
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
+
 // global identifier variable used for auto increment book id
 long int identifier =1l;
 
@@ -66,10 +75,16 @@ struct Book  fillBookData(){
  */
 void printBook(struct Book book){
     printf("\n");
-    printf("book's id :   %d \n",book.id);
-    printf("book's name:   %s \n",book.name);
-    printf("book's author:  %s \n",book.author);
-    printf("book's price:   %d  \n",book.price);
+    printf("------------------\n");
+    printf(KYEL "book's id    :  ");   
+    printf(KWHT"%d \n",book.id);
+    printf(KYEL "book's name  :  ");   
+    printf(KWHT"%s \n",book.name);
+    printf(KYEL "book's author:  ");   
+    printf(KWHT"%s \n",book.author);
+    printf(KYEL "book's price :  ");   
+    printf(KWHT"%d  \n",book.price);
+    printf("------------------\n");
     printf("\n");
 }
 
@@ -188,15 +203,23 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
 void printList(struct node* phead){
     struct node * temp = phead;
     if(!temp){
-        printf("\nLibrary is empty.\n");
+        printf(KRED"\nLibrary is empty.\n\n");
+        printf(KWHT);
     }
     else{
-        printf("\n\n[[\n");
+        printf("\n\n[[\n\n");
         
            while(temp){
-                printBook(temp->book);
+                printf(KRED "-------------------\n");
+                printf(KRED "-------------------\n");
+                printf(KYEL "Id   ")  ;
+                printf(KWHT ":  %d\n",temp->book.id);
+                printf(KYEL "Name ");
+                printf(KWHT ":  %s\n",temp->book.name);
+                printf(KRED "-------------------\n");
+                printf(KRED "-------------------\n");
                 temp= temp->next;
-                printf("\n,\n");
+                printf( KWHT ",\n");
             }
             
             printf("\n]]\n\n");
