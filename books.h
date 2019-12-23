@@ -3,6 +3,14 @@
 #include <string.h>
 #include "functions.h"
 
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 
 // global identifier variable used for auto increment book id
 long int identifier =1l;
@@ -19,8 +27,6 @@ struct Book{
         struct node* next;
        struct node* prev;    
 } ;
-
-
 
 // Book details functions //
 struct Book fillBookData();
@@ -62,7 +68,6 @@ struct Book  fillBookData(){
     return book;
 }
 
-
 /**
  * @print the details of a single book
  * @param book : struct Book
@@ -70,13 +75,18 @@ struct Book  fillBookData(){
  */
 void printBook(struct Book book){
     printf("\n");
-    printf("book's id :   %d \n",book.id);
-    printf("book's name:   %s \n",book.name);
-    printf("book's author:  %s \n",book.author);
-    printf("book's price:   %d  \n",book.price);
+    printf("------------------\n");
+    printf(KYEL "book's id    :  ");   
+    printf(KWHT"%d \n",book.id);
+    printf(KYEL "book's name  :  ");   
+    printf(KWHT"%s \n",book.name);
+    printf(KYEL "book's author:  ");   
+    printf(KWHT"%s \n",book.author);
+    printf(KYEL "book's price :  ");   
+    printf(KWHT"%d  \n",book.price);
+    printf("------------------\n");
     printf("\n");
 }
-
 
 // list functions
 
@@ -84,8 +94,7 @@ void printBook(struct Book book){
  * @brief  createnode function return a pointer to node 
  * @param book : struct Book
  * @return  ptr :  struct node* 
- */
- 
+ */ 
 struct node * createnode( struct Book book){
             struct node * ptr = (struct node *) malloc(sizeof(struct node));
             if(ptr){
@@ -104,9 +113,7 @@ struct node * createnode( struct Book book){
  * @param book : struct Book
  * @return  retval : int (check if addition was successful)
  */
- 
 int addnode(struct node** phead,struct node** ptail, struct Book book){
-   
     int retval =0;
     struct node* ptr = createnode(book);
     if(ptr){
@@ -124,14 +131,12 @@ int addnode(struct node** phead,struct node** ptail, struct Book book){
     return retval;
 }
 
-
 /**
  * @brief   write data  into the .dat file 
  * @param book : struct Book*
  * @param path : char []  ( the file path to write into)
  * @return  retval : int (check if writing was successful)
  */
- 
 int writeIntoFile(struct Book*  book ,char path[]  ){
     int retval =0;
      FILE * outfile ;
@@ -147,14 +152,19 @@ int writeIntoFile(struct Book*  book ,char path[]  ){
                         // writing the content of book struct into the file 
         
                         fwrite (book,sizeof(struct Book),1,outfile);
-        
-                        printf("book added and contents to file written successfully !\n"); 
                         fclose (outfile);
                         retval =1;
         }
         return retval;
 }
 
+/**
+ * @brief   load the data from file into list
+ * @param phead : struct node**
+ * @param ptail : struct node**
+ * @param path : char []  ( the file path to read from)
+ * @return  retval : int (check if reading was successful)
+ */
 
 int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
     int retval =0;
@@ -188,28 +198,34 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
 
 }
 
-
 // print the whole list of books
 
 void printList(struct node* phead){
     struct node * temp = phead;
     if(!temp){
-        printf("\nLibrary is empty.\n");
+        printf(KRED"\nLibrary is empty.\n\n");
+        printf(KWHT);
     }
     else{
-        printf("\n[[\n");
+        printf("\n\n[[\n\n");
         
            while(temp){
-                printBook(temp->book);
+                printf(KRED "-------------------\n");
+                printf(KRED "-------------------\n");
+                printf(KYEL "Id   ")  ;
+                printf(KWHT ":  %d\n",temp->book.id);
+                printf(KYEL "Name ");
+                printf(KWHT ":  %s\n",temp->book.name);
+                printf(KRED "-------------------\n");
+                printf(KRED "-------------------\n");
                 temp= temp->next;
-                printf("\n***********************************************\n");
+                printf( KWHT ",\n");
             }
             
-            printf("\n]]\n");
+            printf("\n]]\n\n");
     }
  
 }
-
 
 // get list size
 int getSize(struct node* phead){
@@ -223,8 +239,12 @@ int getSize(struct node* phead){
     
 }
 
-// search function
-
+/**
+ * @brief   search for a book using its name
+ * @param phead : struct node*
+ * @param name : char []  ( the book name )
+ * @return ptr : struct Book * ( pointer to the found book " NULL if not found")
+ */
 struct Book * search(struct node* phead,char name[]){
     struct node* temp = phead;
     struct Book* ptr = NULL;
@@ -242,7 +262,6 @@ struct Book * search(struct node* phead,char name[]){
             temp = temp->next;
         }
     }
-    
     return ptr;
 }
 
@@ -252,6 +271,8 @@ void bubbleSort(struct node *head)
     int swapped, i; 
     struct node *ptr1; 
     struct node *lptr = NULL; 
+    char tmp1 [40] ;
+    char tmp2[40];
   
     /* Checking for empty list */
     if (head == NULL) 
@@ -264,7 +285,13 @@ void bubbleSort(struct node *head)
   
         while (ptr1->next != lptr) 
         { 
-            if (strcmp(ptr1->book.name, ptr1->next->book.name ) >0)
+            strcpy(tmp1 , ptr1->book.name);
+            strcpy(tmp2,ptr1->next->book.name);
+            // for non case sensitive comparison
+            tolowercase(tmp1);
+            tolowercase(tmp2);
+            
+            if (strcmp(tmp1, tmp2 ) >0)
             {  
                 swap(ptr1, ptr1->next); 
                 swapped = 1; 
@@ -275,7 +302,6 @@ void bubbleSort(struct node *head)
     } 
     while (swapped); 
 } 
-  
 
 /* function to swap data of two nodes a and b*/
 void swap(struct node *a, struct node *b) 
@@ -285,15 +311,13 @@ void swap(struct node *a, struct node *b)
     b->book= temp; 
 } 
 
-
 /**
  * @brief Delete a book
  * @param &phead
  *  @param &ptail
  * @param id
  */
- 
- int removeBook(struct node** phead ,struct node** ptail, int id,char path[]){
+  int removeBook(struct node** phead ,struct node** ptail, int id,char path[]){
      int found =0 , deleted =0;
     
      struct node * temp = *phead;
@@ -335,19 +359,13 @@ void swap(struct node *a, struct node *b)
      }
      if(deleted){
          remove(path);
-     
         temp = *phead;
-    
-        
         while(temp){
             writeIntoFile(&(temp->book) , path);
             temp = temp->next;
         }
      }
-     
-     
      return deleted ;
-     
- }
+}
 
 

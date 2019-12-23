@@ -1,4 +1,3 @@
-//for getch
 #include <unistd.h>
 #include <termios.h>
 #include <ctype.h>

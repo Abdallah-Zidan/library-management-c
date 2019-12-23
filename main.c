@@ -36,8 +36,6 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-
-
 // Menu 
 
 void menu(struct node ** phead , struct node ** ptail,char path[] ){
@@ -62,7 +60,6 @@ do {
             addnode(phead , ptail , book);
             writeIntoFile(&book , path);
             break;
-            
         case 2:
         	printf("Enter the book name you want to search for : ");
         	scanf("%s",searchName);
@@ -72,10 +69,8 @@ do {
         	}else{
         		printf("sorry book not found.\n\n");
         	}
-
             break;
         case 3:
-                
                 printf("you have %d book in the library \n\n",getSize(*phead));
                 break;
             case 4:
@@ -94,14 +89,9 @@ do {
                     printf("sorry .. maybe that book doesn't exist\n\n");
                 }
                 break;
-                
-                   
-            
         case 7:
             done =1;
             break;
-            
-            
     }
      if(choice!=7)//don't print this when exit the program
      {
