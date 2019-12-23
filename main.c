@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "books.h"  // everything related to books is in that file
+#include "user.h"  //verything related to users is in that file
 
 
 /*
@@ -22,6 +23,10 @@ int main(int argc, char **argv)
     char path[] = "books.dat";
     struct node* phead = NULL;
     struct node* ptail = NULL;
+
+    struct User_node **Head =NULL;
+    struct User_node **Tail =NULL;
+    add_user(Head,Tail);
 
 
   readFileIntoList(&phead,&ptail,path);

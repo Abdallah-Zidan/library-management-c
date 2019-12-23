@@ -4,6 +4,7 @@ struct user
 {
     char user_name[21];
     char password[21];
+    char security_answer[20];
    
 };
 struct User_node
@@ -12,80 +13,79 @@ struct User_node
     struct User_node *Next; 
 
 };
+
 //funtions on list
-struct User_node * create_user(struct User_node *Head,struct User_node *Tail);
+struct User_node * create_user();
 int user_search(struct User_node *Head,struct User_node *Tail,char user[]);
-int add_user(struct User_node *Head,struct User_node *Tail);
+int add_user(struct User_node **Head,struct User_node **Tail);
 
-//functions on users
+//functions on user
 struct user fill_user(void);
+int user_search(struct User_node *Head,struct User_node *Tail,char user[]);
+
 
 //create user
-int add_user(struct User_node **Head,struct User_node **Tail)
+struct User_node * create_user()
 {
     struct User_node *ptr;
-    int retval=0,done=0;
-     ptr=create_user(*Head,*Tail);
-        if(!*Head) //there is no users
-        {
-            *Head=*Tail=ptr;
-            
-            printf("%s sttt\t\t",*Head->u.user_name);
-            
-
-        }
-        else //there is a user or more
-        {
-            do
-        {
-           
-            // printf("%s\n",us.user_name);
-             if(!user_search(*Head,*Tail,ptr->u.user_name))
-                 {
-                     *Tail->Next=ptr;
-                     *Tail=ptr;
-                     retval=1;
-                     done=1;
-                    //  printf("%s\n",ptr->u.user_name);
-                 }
-             else
-                 {
-                     printf("user already exists\n..try again !");
-                     ptr=create_user(*Head,*Tail);
-                  }
-        }while(!done);
-            
-        
-       
-        
-        
-        
-        
-    }
-    return retval;
-
-}
-
-//create user
-struct User_node * create_user(struct User_node *Head,struct User_node *Tail)
-{
-    struct User_node *ptr;
-    // struct user us;
-    ptr=(struct User_node* ) malloc(sizeof(struct User_node));
+    ptr=(struct User_node *)malloc(sizeof(struct User_node));
     if(ptr)
     {
-        ptr->Next=NULL;
-        ptr->u=fill_user();
+        ptr-> u=fill_user();
+        ptr-> Next =NULL;
     }
     return ptr;
+}
+
+int add_user(struct User_node **Head,struct User_node **Tail)
+{
+    int isExist=0,retval=0;
+    struct User_node *ptr= create_user();
+
+    if(ptr)
+    {
+        if(!*Head) //no list
+        {
+            *Head=*Tail=ptr;
+        }
+        else //there is a list
+        {   
+            //search for the same user is exist or not
+            isExist=user_search(*Head,*Tail,ptr->u.user_name);
+            while(isExist)
+            {
+                printf("sorry user name already exist try again..");
+                free(ptr);
+                ptr=create_user();
+				isExist=user_search(*Head,*Tail,ptr->u.user_name);
+            }
+
+			if(Head==Tail)//1 user only
+			{
+				(*Head)->Next=ptr; //error is here
+				*Tail=ptr;
+
+			}
+			else // more than 1 user
+			{
+				 (*Tail)->Next=ptr;
+				 *Tail=ptr;
+			}
+
+		}
+        retval=1;
+    }
+    return retval;
 }
 
 //fill user
 struct user fill_user(void)
 {
+    
     struct user u;
-    char c,pass[21]={};
-    int l,done=0;
+	char c,pass[21];
+	int l,done=0;
+	strcpy(pass,"");
     printf("please enter user name: ");
     scanf("%s",u.user_name);
     printf("please enter password (max 20 chars): ");
@@ -113,7 +113,8 @@ struct user fill_user(void)
     return u;
 }
 
-//user_search for user
+
+//search for user
 int user_search(struct User_node *Head,struct User_node *Tail,char user[])
 {
     int retval=0;
