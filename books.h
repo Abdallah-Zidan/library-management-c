@@ -3,14 +3,7 @@
 #include <string.h>
 #include "functions.h"
 
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
+
 
 // global identifier variable used for auto increment book id
 long int identifier =1l;
@@ -59,12 +52,14 @@ int removeBook(struct node ** phead,struct node** ptail,int id,char path[]);
 struct Book  fillBookData(){
    struct Book book;
     book.id = identifier;
+    printf(KGRN);
     printf("Enter the book name : ");
     scanf("%s",book.name);
     printf("Enter book Author : ");
     scanf("%s",book.author);
     printf("Enter the book price : ");
     scanf("%d",&book.price);
+    printf(KNRM);
     return book;
 }
 
@@ -75,7 +70,7 @@ struct Book  fillBookData(){
  */
 void printBook(struct Book book){
     printf("\n");
-    printf("------------------\n");
+    printf("-------------------------\n");
     printf(KYEL "book's id    :  ");   
     printf(KWHT"%d \n",book.id);
     printf(KYEL "book's name  :  ");   
@@ -84,7 +79,7 @@ void printBook(struct Book book){
     printf(KWHT"%s \n",book.author);
     printf(KYEL "book's price :  ");   
     printf(KWHT"%d  \n",book.price);
-    printf("------------------\n");
+    printf("-------------------------\n");
     printf("\n");
 }
 
@@ -210,6 +205,7 @@ void printList(struct node* phead){
         printf("\n\n[[\n\n");
         
            while(temp){
+             
                 printf(KRED "-------------------\n");
                 printf(KRED "-------------------\n");
                 printf(KYEL "Id   ")  ;
