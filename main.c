@@ -14,6 +14,7 @@
  
  
 void menu(struct node ** phead , struct node ** ptail,char path[] );
+void user_menu(struct User_node ** Head , struct User_node ** Tail,char U_Path[] ,struct node ** phead , struct node ** ptail,char path[] );
 char getch(void);
 
 
@@ -23,15 +24,25 @@ int main(int argc, char **argv)
     char path[] = "books.dat";
     struct node* phead = NULL;
     struct node* ptail = NULL;
+    struct User_node *Head =NULL;
+    struct User_node *Tail =NULL;
+    // struct User_node *ptr;
+    // add_user(&Head,&Tail);
+    // add_user(&Head,&Tail);
+    // add_user(&Head,&Tail);
+    // ptr=Head;
+    // while(ptr)
+    // {
+    //     print_user(ptr->u);
+    //     ptr=ptr->Next;
+    // }
 
-    struct User_node **Head =NULL;
-    struct User_node **Tail =NULL;
-    add_user(Head,Tail);
 
 
   readFileIntoList(&phead,&ptail,path);
 
-  menu(&phead,&ptail,path);
+//   menu(&phead,&ptail,path);
+  user_menu(&Head,&Tail,path,&phead,&ptail,path);
     
 	return 0;
 }
@@ -104,15 +115,76 @@ do {
 
 }
 
+void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,struct node **phead , struct node **ptail,char path[] )
+{
+    int choice,done=0;
+    
+    do
+    {
+         system("clear");
+     printf("choose from the following : \n");
+    printf("1- login.\n2- create a new user.\n3- printall.\n4- exit.\n");
+    printf("your choice : ");
+    scanf("%d",&choice);
+    system("clear");
+        switch(choice)
+        {
+        case 1:
+        {
+            if(login(*Head,*Tail))
+            {
+                menu(phead,ptail,path);
+                printf("access granted");
+                getch();
+            }
+            else
+            {
+                printf("try again: \n");
+                getch();
+            }
+            break;
+        }
+        case 2:
+        {
+            if(add_user(Head,Tail))
+            {
+                printf("user created succesfully..!");
 
-
-
-
-
-
-
-
-
+            }
+            else
+            {
+                printf("sorry user creation failed ..try again: \n");
+            }
+            break;
+                
+        }
+        case 3:
+        {
+             struct User_node *ptr;
+   
+    ptr=*Head;
+    while(ptr)
+    {
+        print_user(ptr->u);
+        ptr=ptr->Next;
+    }
+            break;
+        }
+        case 4:
+        {
+            done=1;
+            break;
+        }
+        
+    }
+    if(choice!=4)//don't print this when exit the program
+         {
+         printf("\npress any key to continue...\n");
+         printf("\n%s\n",(*Head)->u.password);
+         getch();
+         }
+    }while(!done);
+}
 
 
 
