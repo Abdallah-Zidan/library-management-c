@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "books.h"  // everything related to books is in that file
+#include "user.h"  //verything related to users is in that file
 
 
 /*
@@ -13,6 +14,7 @@
  
  
 void menu(struct node ** phead , struct node ** ptail,char path[] );
+void user_menu(struct User_node ** Head , struct User_node ** Tail,char U_Path[] ,struct node ** phead , struct node ** ptail,char path[] );
 char getch(void);
 void moveCursor(int initY);
 
@@ -24,13 +26,13 @@ int main(int argc, char **argv)
 {
 
     char path[] = "books.dat";
+    char U_path[]="users.dat";
     struct node* phead = NULL;
     struct node* ptail = NULL;
-
-  readFileIntoList(&phead,&ptail,path);
-
-  menu(&phead,&ptail,path);
-    
+    struct User_node *Head =NULL;
+    struct User_node *Tail =NULL;
+    readFileIntoList(&phead,&ptail,path);
+    user_menu(&Head,&Tail,U_path,&phead,&ptail,path);
 	return 0;
 }
 
@@ -70,7 +72,7 @@ void menu(struct node ** phead , struct node ** ptail,char path[] ){
    
 do {
     system("clear");
- printf("choose from the following : \n");
+    printf("choose from the following : \n");
     printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- sort the book alphabetically.\n6- remove book by id.\n7- exit.\n");
     printf("your choice : ");
     scanf("%d",&choice);
@@ -136,19 +138,90 @@ do {
      }
     
 }while(!done);
-    
-
 }
 
+void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,struct node **phead , struct node **ptail,char path[] )
+{
+    int choice,done=0,root=0;
+    struct User_node *ptr;
+    if(readUsersFileIntoList(Head ,Tail,U_Path))
+    do
+    {
+         
+        if(choice!=4)//to exit the program when exit the functions menu
+        {
+         system("clear");
+          printf("choose from the following : \n");
+          printf("1- login.\n2- create a new user.\n3- printall.\n4- exit.\n");
+          printf("your choice : ");
+         scanf("%d",&choice);
+          system("clear");
+        }
+        switch(choice)
+        {
+        case 1:
+        {
+            if(login(*Head,*Tail))//access granted
+            {
+                menu(phead,ptail,path);
+                system("clear");
+                choice=4;//mark exit after exit the functions menu
+               
+            }
+            else//access denied
+            {
+                printf("username or password is wrong..!\n");
+            }
+            break;
+        }
+        
+        case 2:
+        {
+            // if(root)//only root user can add new users
+            ptr=add_user(Head,Tail);
+            if(ptr)
+            {
+               
+                if(writeUserIntoFile(&(ptr->u), U_Path  ))
+                {
+                     printf("\nuser created succesfully..!");
+                }
 
 
-
-
-
-
-
-
-
+            }
+            else
+            {
+                printf("\nsorry user creation failed ..try again \n");
+            }
+            break;
+                
+        }
+        case 3:
+        {
+             struct User_node *ptr;
+   
+            ptr=*Head;
+            while(ptr)
+             {
+               print_user(ptr->u);
+                ptr=ptr->Next;
+             }
+            break;
+        }
+        case 4:
+        {
+            done=1;
+            break;
+        }
+        
+    }
+    if(choice!=4)//don't print this when exit the program
+         {
+         printf("\npress any key to continue...\n");
+         getch();
+         }
+    }while(!done);
+}
 
 
 
