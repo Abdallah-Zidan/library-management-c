@@ -103,6 +103,8 @@ do {
 void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,struct node **phead , struct node **ptail,char path[] )
 {
     int choice,done=0,root=0;
+    struct User_node *ptr;
+    if(readUsersFileIntoList(Head ,Tail,U_Path))
     do
     {
          
@@ -136,9 +138,15 @@ void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,
         case 2:
         {
             // if(root)//only root user can add new users
-            if(add_user(Head,Tail))
+            ptr=add_user(Head,Tail);
+            if(ptr)
             {
-                printf("\nuser created succesfully..!");
+               
+                if(writeUserIntoFile(&(ptr->u), U_Path  ))
+                {
+                     printf("\nuser created succesfully..!");
+                }
+
 
             }
             else

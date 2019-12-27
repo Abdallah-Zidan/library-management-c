@@ -16,11 +16,15 @@ struct User_node
 
 //funtions on list
 struct User_node * create_user(void);
-int add_user(struct User_node **Head,struct User_node **Tail);
+struct User_node* add_user(struct User_node **Head,struct User_node **Tail);
 struct user fill_user(void);
 struct User_node * user_search(struct User_node *Head,struct User_node *Tail,char user[]);
 void print_user(struct user u);
 int login(struct User_node *Head,struct User_node *Tail);
+
+
+int readUsersFileIntoList(struct User_node** Head , struct User_node** Tail,char U_Path[]);
+int writeUserIntoFile(struct user* user ,char U_Path[]  );
 
 
 
@@ -37,9 +41,9 @@ struct User_node * create_user()
     return ptr;
 }
 
-int add_user(struct User_node **Head,struct User_node **Tail)
+struct User_node* add_user(struct User_node **Head,struct User_node **Tail)
 {
-    int retval=0;
+    struct User_node *retval=NULL;
     struct User_node *ptr= create_user();
     struct User_node *isExist;
 
@@ -53,16 +57,16 @@ int add_user(struct User_node **Head,struct User_node **Tail)
         {   
             //search for the same user is exist or not
             isExist=user_search(*Head,*Tail,ptr->u.user_name);
-            puts("s");
             while(isExist)
             {
-                printf("sorry user name already exist try again..");
+                system("clear");
+                printf("sorry user name already exist try again..\n\n");
                 free(ptr);
                 ptr=create_user();
 				isExist=user_search(*Head,*Tail,ptr->u.user_name);
             }
 
-			if(Head==Tail)//1 user only
+			if(*Head==*Tail)//1 user only
 			{
 				(*Head)->Next=ptr; //error is here
 				*Tail=ptr;
@@ -75,7 +79,7 @@ int add_user(struct User_node **Head,struct User_node **Tail)
 			}
 
 		}
-        retval=1;
+        retval=ptr;
     }
     return retval;
 }
@@ -161,6 +165,72 @@ int login(struct User_node *Head,struct User_node *Tail)
             
             retval=1;
         }
+    }
+    return retval;
+}
+
+int writeUserIntoFile(struct user* user ,char U_Path[]  )
+{
+    int retval=0;
+    FILE *outfile;
+    outfile=fopen(U_Path,"a");
+    //check if the file opened
+    if(outfile==NULL)
+    {
+        fprintf(stderr, "\nError opening the file .. data may not be saved \n"); 
+    }
+    else
+    {
+         // writing the content of user struct into the file 
+         fwrite(user,sizeof(struct user),1,outfile);
+         fclose(outfile);
+         retval=1;
+    }
+    return retval;
+}
+int readUsersFileIntoList(struct User_node** Head , struct User_node** Tail,char U_Path[])
+{
+    int retval=0;
+    struct user input;
+    FILE *inFile;
+    inFile=fopen(U_Path,"r");
+    if(inFile!=NULL)
+    {
+        while(fread(&input,sizeof(struct user),1,inFile))
+        {
+            struct User_node *ptr;
+              ptr=(struct User_node *)malloc(sizeof(struct User_node));
+             if(ptr)
+             {
+                ptr-> u=input;
+                 ptr-> Next =NULL;
+             }
+             if(!*Head)
+             {
+                 *Head=*Tail=ptr;
+             }
+             else
+             {
+                 if(*Head==*Tail)//1 user only
+			    {
+				    (*Head)->Next=ptr; 
+				    *Tail=ptr;
+
+			    }
+		    	else // more than 1 user
+			    {
+				     (*Tail)->Next=ptr;
+				     *Tail=ptr;
+			    }
+             }
+
+        }
+        retval=1;
+    }
+    else
+    {
+        fopen(U_Path,"w");//create file if first use
+        retval=2;
     }
     return retval;
 }
