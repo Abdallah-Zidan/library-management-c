@@ -22,28 +22,13 @@ int main(int argc, char **argv)
 {
 
     char path[] = "books.dat";
+    char U_path[]="users.dat";
     struct node* phead = NULL;
     struct node* ptail = NULL;
     struct User_node *Head =NULL;
     struct User_node *Tail =NULL;
-    // struct User_node *ptr;
-    // add_user(&Head,&Tail);
-    // add_user(&Head,&Tail);
-    // add_user(&Head,&Tail);
-    // ptr=Head;
-    // while(ptr)
-    // {
-    //     print_user(ptr->u);
-    //     ptr=ptr->Next;
-    // }
-
-
-
-  readFileIntoList(&phead,&ptail,path);
-
-//   menu(&phead,&ptail,path);
-  user_menu(&Head,&Tail,path,&phead,&ptail,path);
-    
+    readFileIntoList(&phead,&ptail,path);
+    user_menu(&Head,&Tail,U_path,&phead,&ptail,path);
 	return 0;
 }
 
@@ -59,7 +44,7 @@ void menu(struct node ** phead , struct node ** ptail,char path[] ){
    
 do {
     system("clear");
- printf("choose from the following : \n");
+    printf("choose from the following : \n");
     printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- sort the book alphabetically.\n6- remove book by id.\n7- exit.\n");
     printf("your choice : ");
     scanf("%d",&choice);
@@ -82,24 +67,26 @@ do {
         	}
             break;
         case 3:
-                printf("you have %d book in the library \n\n",getSize(*phead));
-                break;
-            case 4:
-                printList(*phead);
-                break;
-            case 5:
-                bubbleSort(*phead);
-                break;
-            case 6:
-                printf("the id of the book you want to delete ? : ");
-                scanf("%d",&removeId);
-                retval = removeBook(phead ,ptail , removeId,path);
-                if(retval ){
-                    printf("successfully deleted book of id : %d\n\n",removeId);
-                }else{
+            printf("you have %d book in the library \n\n",getSize(*phead));
+            break;
+        case 4:
+            printList(*phead);
+            break;
+        case 5:
+            bubbleSort(*phead);
+            break;
+        case 6:
+            printf("the id of the book you want to delete ? : ");
+            scanf("%d",&removeId);
+            retval = removeBook(phead ,ptail , removeId,path);
+            if(retval )
+            {
+                printf("successfully deleted book of id : %d\n\n",removeId);
+            }else
+            {
                     printf("sorry .. maybe that book doesn't exist\n\n");
-                }
-                break;
+            }
+            break;
         case 7:
             done =1;
             break;
@@ -111,49 +98,52 @@ do {
      }
     
 }while(!done);
-    
-
 }
 
 void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,struct node **phead , struct node **ptail,char path[] )
 {
-    int choice,done=0;
-    
+    int choice,done=0,root=0;
     do
     {
+         
+        if(choice!=4)//to exit the program when exit the functions menu
+        {
          system("clear");
-     printf("choose from the following : \n");
-    printf("1- login.\n2- create a new user.\n3- printall.\n4- exit.\n");
-    printf("your choice : ");
-    scanf("%d",&choice);
-    system("clear");
+          printf("choose from the following : \n");
+          printf("1- login.\n2- create a new user.\n3- printall.\n4- exit.\n");
+          printf("your choice : ");
+         scanf("%d",&choice);
+          system("clear");
+        }
         switch(choice)
         {
         case 1:
         {
-            if(login(*Head,*Tail))
+            if(login(*Head,*Tail))//access granted
             {
                 menu(phead,ptail,path);
-                printf("access granted");
-                getch();
+                system("clear");
+                choice=4;//mark exit after exit the functions menu
+               
             }
-            else
+            else//access denied
             {
-                printf("try again: \n");
-                getch();
+                printf("username or password is wrong..!\n");
             }
             break;
         }
+        
         case 2:
         {
+            // if(root)//only root user can add new users
             if(add_user(Head,Tail))
             {
-                printf("user created succesfully..!");
+                printf("\nuser created succesfully..!");
 
             }
             else
             {
-                printf("sorry user creation failed ..try again: \n");
+                printf("\nsorry user creation failed ..try again \n");
             }
             break;
                 
@@ -162,12 +152,12 @@ void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,
         {
              struct User_node *ptr;
    
-    ptr=*Head;
-    while(ptr)
-    {
-        print_user(ptr->u);
-        ptr=ptr->Next;
-    }
+            ptr=*Head;
+            while(ptr)
+             {
+               print_user(ptr->u);
+                ptr=ptr->Next;
+             }
             break;
         }
         case 4:
@@ -180,7 +170,6 @@ void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,
     if(choice!=4)//don't print this when exit the program
          {
          printf("\npress any key to continue...\n");
-         printf("\n%s\n",(*Head)->u.password);
          getch();
          }
     }while(!done);

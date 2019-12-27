@@ -109,9 +109,11 @@ struct user fill_user(void)
         }
         else
         {
+             
               strcpy(u.password,pass);
-              u.password[l]=0;
+              u.password[l-1]=0;
               done=1;
+              
         }
 
     }
@@ -153,16 +155,12 @@ int login(struct User_node *Head,struct User_node *Tail)
     scanf("%s",pass);
     isExist=user_search(Head,Tail,user);
     if(isExist)
-    {
+    {  
         if(!strcmp(pass,isExist->u.password))
         {
-            printf("%s\t%s",isExist->u.password,pass);
+            
             retval=1;
         }
-    }
-    else
-    {
-        printf("\nusername or password is wrong\n");
     }
     return retval;
 }
