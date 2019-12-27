@@ -2,7 +2,7 @@
 
 ### A simple console program to manage library
 
-=================================================================
+==========================================================
 
 #### Linked list is used in order to save books data.
 

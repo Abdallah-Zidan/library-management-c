@@ -169,18 +169,9 @@ int readFileIntoList(struct node** phead , struct node** ptail, char path[]  ){
      if(infile != NULL){
         while(fread(&input, sizeof(struct Book), 1, infile)) {
             // add each struct into the list
-               struct node* ptr = createnode(input);
-                if(ptr){
-                if(!*phead){
-                    *phead =*ptail = ptr;
-                }
-            else{
-                ptr->prev = *ptail;
-                (*ptail)->next = ptr;
-                *ptail = ptr;
-            }
+
+            addnode(phead,ptail,input);
          identifier=input.id;
-        }
       
    
     }
