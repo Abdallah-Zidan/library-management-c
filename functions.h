@@ -55,7 +55,7 @@ char getch(void)
 
  void gotoxy(int x,int y)
  {
- printf("%c[%d;%df",0x1B,y,x);
+    printf("\033[%d;%dH",y,x);
  }
 
 

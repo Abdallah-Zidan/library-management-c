@@ -16,7 +16,7 @@
 void menu(struct node ** phead , struct node ** ptail,char path[] );
 void user_menu(struct User_node ** Head , struct User_node ** Tail,char U_Path[] ,struct node ** phead , struct node ** ptail,char path[] );
 char getch(void);
-void moveCursor(int initY);
+int traverseList(int initY,int limit,struct node* walker);
 
 
 
@@ -36,24 +36,75 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-
- void moveCursor(int initY){
+/**
+ * @brief   move over the list of books and view the details any chosen book
+ * @param  initY : int (initial y position for the cursor)
+ * @param  limit : int (the maximum y position for cursor to go)
+ * @param  walker  : node * ( a pointer to move over the list)
+ * @return retval : int (check if enter or q was pressed)
+ */
+ int traverseList(int initY,int limit,struct node* walker){
      char ch ;
-     ch =getch();
-    switch (tolower(ch))
-    {
-    case 'w':
-        initY++;
+     int done =0,retval=50;
+      // retval is to check if the user clicked on enter to view the book or q to leave the list
+     // the value will be returned to the menu in order to take the right action.
+     
+     if(walker){
         gotoxy(1,initY);
-        printf("*");
-        break;
-    case 's':
-        initY--;
-         printf("*");
+        printf(KYEL "*");
+        printf(KNRM );
         gotoxy(1,initY);
+     do{
+        ch =getch();
+        switch (tolower(ch))
+        {
+        case 's':
+        if (initY < limit-7)
+        {
+            walker = walker->next;
+            initY+=7;
+            printf("  ");
+            gotoxy(1,initY);
+            
+            printf(KYEL"*");
+            printf(KNRM);
+            gotoxy(1,initY);
+        }
+        
         break;
+        case 'w':
+            if(initY >7){
+                walker = walker->prev;
+                initY-=7;
+                printf("  ");
+                gotoxy(1,initY);
+                printf(KYEL "*");
+                printf(KNRM);
+                gotoxy(1,initY);
+            }
+            break;
+        case 'q':
+            done =1;
+            retval =50;
+            gotoxy(1,limit+7);
+            break;
+
+        case 10:
+            system("clear");
+            printBook(walker->book);
+            printf("press any key to return to the list");
+            getch();
+            retval =4;
+            done =1;
+            break;
   
-    }
+          }
+         }while (!done);
+     }
+     
+      
+         return retval;
+     
  }
 
 
@@ -63,9 +114,9 @@ int main(int argc, char **argv)
 // Menu 
 
 void menu(struct node ** phead , struct node ** ptail,char path[] ){
-	struct node* ptr;
+	struct node* ptr , *walker ;
 	struct Book* bookPtr , book;
-    int choice , done =0 , removeId , retval ;
+    int choice , done =0 , removeId , retval , printllistSize  , check=0;
     char searchName[40];
    // char s[2];
     printf("Library management system using c language.\n\n");
@@ -75,7 +126,10 @@ do {
     printf("choose from the following : \n");
     printf("1- add a new book.\n2- search for a book.\n3- get the books count.\n4- print the books in the library.\n5- sort the book alphabetically.\n6- remove book by id.\n7- exit.\n");
     printf("your choice : ");
-    scanf("%d",&choice);
+    if(!check){
+        scanf("%d",&choice);
+    }
+ 
     system("clear");
     switch(choice){
         case 1:
@@ -105,9 +159,23 @@ do {
                 printf(KNRM);
                 break;
             case 4:
+                gotoxy(1,1);
+                
+                printf("                                                      ");
                 printList(*phead);
-               // moveCursor(16);
-               // fflush(stdin);
+                if(*phead){
+                     printf("Use w and s to move up and down\n");
+                     printf("\nPress enter to view the full book details or q to return to main menu");
+                }
+                printllistSize=getSize(*phead)*6+7;
+                walker = *phead;
+                choice = traverseList(7,printllistSize,walker);
+                if(choice ==4){
+                   check =1;
+                }
+                else{
+                   check =0;
+                }
                 break;
             case 5:
                 bubbleSort(*phead);
@@ -128,14 +196,18 @@ do {
                 break;
         case 7:
             done =1;
+            gotoxy(1,1);
             break;
     }
-     if(choice!=7)//don't print this when exit the program
-     {
+    if(!check){
+        if(choice!=7 )//don't print this when exit the program
+        {
         
          printf("press any key to continue...");
          getch();
-     }
+         }
+    }
+     
     
 }while(!done);
 }
@@ -150,11 +222,11 @@ void user_menu(struct User_node **Head , struct User_node **Tail,char U_Path[] ,
          
         if(choice!=4)//to exit the program when exit the functions menu
         {
-         system("clear");
+          system("reset");
           printf("choose from the following : \n");
           printf("1- login.\n2- create a new user.\n3- printall.\n4- exit.\n");
           printf("your choice : ");
-         scanf("%d",&choice);
+          scanf("%d",&choice);
           system("clear");
         }
         switch(choice)

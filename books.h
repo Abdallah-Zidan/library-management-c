@@ -50,11 +50,15 @@ int removeBook(struct node ** phead,struct node** ptail,int id,char path[]);
  * @return book : struct Book
  */
 struct Book  fillBookData(){
+    char temp;
    struct Book book;
     book.id = identifier;
     printf(KGRN);
     printf("Enter the book name : ");
-    scanf("%s",book.name);
+    scanf("%c",&temp);
+   fgets(book.name,40,stdin);
+   
+   //scanf("%s",book.name);
     printf("Enter book Author : ");
     scanf("%s",book.author);
     printf("Enter the book price : ");
@@ -193,23 +197,24 @@ void printList(struct node* phead){
         printf(KWHT);
     }
     else{
-        printf("\n\n[[\n\n");
+        printf("\n\n    [[\n\n");
         
            while(temp){
              
-                printf(KRED "-------------------\n");
-                printf(KRED "-------------------\n");
-                printf(KYEL "Id   ")  ;
+                printf(KRED "   -------------------\n");
+                printf(KRED "   -------------------\n");
+                printf(KYEL "   Id   ")  ;
                 printf(KWHT ":  %d\n",temp->book.id);
-                printf(KYEL "Name ");
+                printf(KYEL "   Name ");
                 printf(KWHT ":  %s\n",temp->book.name);
-                printf(KRED "-------------------\n");
-                printf(KRED "-------------------\n");
+                printf(KRED "   -------------------\n");
+                printf(KRED "   -------------------\n");
                 temp= temp->next;
-                printf( KWHT ",\n");
+                printf( KWHT "  ,\n");
             }
             
-            printf("\n]]\n\n");
+            printf("\n  ]]\n\n");
+            
     }
  
 }
